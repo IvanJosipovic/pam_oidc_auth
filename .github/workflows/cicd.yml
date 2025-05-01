@@ -64,7 +64,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: x64-so
-        path: src/pam_oidc_auth/bin/Release/**/linux-x64/publish/
+        path: src/pam_oidc_auth/bin/Release/net9.0/linux-x64/publish/
 
   publish-arm64:
     name: Publish arm64
@@ -84,7 +84,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: arm64-so
-        path: src/pam_oidc_auth/bin/Release/**/linux-x64/publish/
+        path: src/pam_oidc_auth/bin/Release/net9.0/linux-x64/publish/
 
   create-release:
     if: ${{ github.event_name != 'pull_request' }}
