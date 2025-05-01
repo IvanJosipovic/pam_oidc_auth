@@ -15,6 +15,7 @@
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <DebuggerSupport>false</DebuggerSupport>
     </PropertyGroup>
 
     <ItemGroup>
