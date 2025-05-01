@@ -22,8 +22,8 @@ internal partial class LibPAM
 
     internal const int LOG_NOTICE = 5;  // from <syslog.h>
 
-    [DllImport("libpam.so.0", CallingConvention = CallingConvention.Cdecl)]
-    internal static extern void pam_syslog(
+    [LibraryImport("libpam.so.0", EntryPoint = "pam_syslog", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void pam_syslog(
         IntPtr pamh,
         int priority,
         [MarshalAs(UnmanagedType.LPStr)] string fmt,
