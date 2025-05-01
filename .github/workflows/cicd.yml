@@ -45,17 +45,49 @@ jobs:
         files: coverage.cobertura.xml
         fail_ci_if_error: false
 
+  publish-x64:
+    name: Publish x64
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: global.json
+
     - name: Publish x64
       run: dotnet publish -r linux-x64
 
-    - name: Publish arm64
+    - uses: actions/upload-artifact@v4
+      with:
+        name: x64-so
+        path: src/**/pam_oidc_auth.so
+
+  publish-arm64:
+    name: Publish arm64
+    runs-on: ubuntu-24.04-arm
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: global.json
+
+    - name: Publish x64
       run: dotnet publish -r linux-arm64
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: arm64-so
+        path: src/**/pam_oidc_auth.so
 
   create-release:
     if: ${{ github.event_name != 'pull_request' }}
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test]
+    needs: [build-test,publish-x64,publish-arm64]
     steps:
     - uses: actions/checkout@v4
 
