@@ -15,6 +15,12 @@
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugSymbols>False</DebugSymbols>
+        <DebugType>None</DebugType>
         <DebuggerSupport>false</DebuggerSupport>
     </PropertyGroup>
 
