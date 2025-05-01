@@ -9,24 +9,19 @@ namespace pam_oidc_sharp;
 
 public static class PamModule
 {
-    // Export pam_sm_authenticate
     [UnmanagedCallersOnly(EntryPoint = "pam_sm_authenticate")]
-    public static int Authenticate(
-        IntPtr pamh,
-        int flags,
-        int argc,
-        IntPtr argv)
+    public static int pam_sm_authenticate(IntPtr pamh, int flags, int argc, IntPtr argv)
     {
         // 1) Retrieve username
         if (LibPAM.pam_get_user(pamh, out IntPtr userPtr) != (int)PamStatus.PAM_SUCCESS)
-            return (int)PamStatus.PAM_AUTHINFO_UNAVAIL;
+            return (int)PamStatus.PAM_CRED_INSUFFICIENT;
 
         string user = Marshal.PtrToStringAnsi(userPtr)!;
         LibPAM.pam_syslog(pamh, (int)SyslogPriority.LOG_NOTICE, "starting auth for user %s", user);
 
         // 2) Retrieve JWT/password
         if (LibPAM.pam_get_authtok(pamh, (int)PamItemTypes.PAM_AUTHTOK, out IntPtr tokPtr) != (int)PamStatus.PAM_SUCCESS)
-            return (int)PamStatus.PAM_AUTHINFO_UNAVAIL;
+            return (int)PamStatus.PAM_CRED_INSUFFICIENT;
 
         string token = Marshal.PtrToStringAnsi(tokPtr)!;
 
@@ -40,19 +35,13 @@ public static class PamModule
         if (!opts.TryGetValue("audience", out string? audience))
             return (int)PamStatus.PAM_AUTHINFO_UNAVAIL;
 
-        // 4) Validate JWT
-        bool valid = ValidateJwt(token, audience, discoveryUrl);
-        return valid ? (int)PamStatus.PAM_SUCCESS : (int)PamStatus.PAM_PERM_DENIED;
-    }
+        if (!opts.TryGetValue("username_claim", out string? usernameClaim))
+            usernameClaim = "preferred_username";
 
-    // Export pam_sm_setcred
-    [UnmanagedCallersOnly(EntryPoint = "pam_sm_setcred")]
-    public static int SetCredentials(
-        IntPtr pamh,
-        int flags,
-        int argc,
-        IntPtr argv)
-        => (int)PamStatus.PAM_IGNORE;
+        // 4) Validate JWT
+        bool valid = ValidateJwt(token, audience, user, usernameClaim, discoveryUrl);
+        return valid ? (int)PamStatus.PAM_SUCCESS : (int)PamStatus.PAM_AUTH_ERR;
+    }
 
     // Helper: read argv into string[]
     private static string[] GetArguments(IntPtr argv, int argc)
@@ -81,27 +70,30 @@ public static class PamModule
     }
 
     // JWT validation using OIDC configuration
-    private static bool ValidateJwt(string token, string audience, string discoveryUrl)
+    private static bool ValidateJwt(string token, string audience, string username, string usernameClaim, string discoveryUrl)
     {
         try
         {
             var http = new HttpDocumentRetriever { RequireHttps = discoveryUrl.StartsWith("https://") };
 
-            var config = OpenIdConnectConfigurationRetriever.GetAsync(discoveryUrl, http, CancellationToken.None).GetAwaiter().GetResult();
-
-            config.
+            var config = OpenIdConnectConfigurationRetriever.GetAsync(discoveryUrl, http, CancellationToken.None)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
 
             var validationParameters = new TokenValidationParameters
             {
-                ValidateIssuerSigningKey = true,
                 IssuerSigningKeys = config.SigningKeys,
-                ValidIssuer = config.Issuer,
+                ValidateIssuerSigningKey = true,
                 ValidAudience = audience,
+                ValidIssuer = config.Issuer,
             };
 
-            new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _);
+            var principal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _);
 
-            return true;
+            var nameClaim = principal.FindFirst(usernameClaim);
+
+            return nameClaim is not null && string.Equals(nameClaim.Value, username, StringComparison.OrdinalIgnoreCase);
         }
         catch
         {
