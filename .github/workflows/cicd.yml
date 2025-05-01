@@ -45,6 +45,12 @@ jobs:
         files: coverage.cobertura.xml
         fail_ci_if_error: false
 
+    - name: Publish x64
+      run: dotnet publish -r linux-x64
+
+    - name: Publish arm64
+      run: dotnet publish -r linux-arm64
+
   create-release:
     if: ${{ github.event_name != 'pull_request' }}
     name: Create Release
