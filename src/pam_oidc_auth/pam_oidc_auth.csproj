@@ -15,6 +15,7 @@
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <OptimizationPreference>Size</OptimizationPreference>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
