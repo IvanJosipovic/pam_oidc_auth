@@ -23,6 +23,7 @@
         <DebugType>None</DebugType>
         <DebuggerSupport>false</DebuggerSupport>
         <MetricsSupport>false</MetricsSupport>
+        <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
     </PropertyGroup>
 
     <ItemGroup>
