@@ -39,7 +39,7 @@ auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{
 
 Results should look like
 ```
-pamtester -v oidc_auth name@company.com authenticate
+pamtester -v pam_oidc_auth name@company.com authenticate
 pamtester: invoking pam_start(oidc_auth, name@company.com, ...)
 pamtester: performing operation - authenticate
 Password:
