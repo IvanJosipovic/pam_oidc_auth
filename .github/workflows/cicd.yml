@@ -58,12 +58,13 @@ jobs:
         global-json-file: global.json
 
     - name: Publish x64
-      run: dotnet publish -r linux-x64 -o /${{ runner.temp }}/
+      working-directory: src/pam_oidc_auth
+      run: dotnet publish -r linux-x64
 
     - uses: actions/upload-artifact@v4
       with:
         name: x64-so
-        path: ${{ runner.temp }}
+        path: src/pam_oidc_auth/bin/Release/**/linux-x64/publish/
 
   publish-arm64:
     name: Publish arm64
@@ -78,12 +79,12 @@ jobs:
         global-json-file: global.json
 
     - name: Publish x64
-      run: dotnet publish -r linux-arm64 -o /${{ runner.temp }}/
+      run: dotnet publish -r linux-arm64
 
     - uses: actions/upload-artifact@v4
       with:
         name: arm64-so
-        path: ${{ runner.temp }}
+        path: src/pam_oidc_auth/bin/Release/**/linux-x64/publish/
 
   create-release:
     if: ${{ github.event_name != 'pull_request' }}
