@@ -1,4 +1,4 @@
-﻿namespace pam_oidc_sharp;
+﻿namespace pam_oidc_auth;
 
 /// <summary>
 /// The PAM item types.

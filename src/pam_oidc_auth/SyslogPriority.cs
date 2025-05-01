@@ -1,4 +1,4 @@
-﻿namespace pam_oidc_sharp;
+﻿namespace pam_oidc_auth;
 
 /// <summary>
 /// Syslog priority levels
