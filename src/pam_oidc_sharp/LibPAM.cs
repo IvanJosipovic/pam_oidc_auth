@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace oidc_pam_sharp;
+namespace pam_oidc_sharp;
 
 internal partial class LibPAM
 {

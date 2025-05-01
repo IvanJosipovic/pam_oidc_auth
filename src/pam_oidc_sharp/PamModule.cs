@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace oidc_pam_sharp;
+namespace pam_oidc_sharp;
 
 public static class PamModule
 {
