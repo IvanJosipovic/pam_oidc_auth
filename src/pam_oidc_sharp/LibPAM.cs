@@ -2,7 +2,7 @@
 
 namespace pam_oidc_sharp;
 
-internal partial class LibPAM
+internal partial class Libpam
 {
     /// <summary>
     /// Get authentication token

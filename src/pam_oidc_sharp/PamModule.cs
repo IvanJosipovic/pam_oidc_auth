@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -13,14 +12,14 @@ public static class PamModule
     public static int pam_sm_authenticate(IntPtr pamh, int flags, int argc, IntPtr argv)
     {
         // 1) Retrieve username
-        if (LibPAM.pam_get_user(pamh, out IntPtr userPtr) != (int)PamStatus.PAM_SUCCESS)
+        if (Libpam.pam_get_user(pamh, out IntPtr userPtr) != (int)PamStatus.PAM_SUCCESS)
             return (int)PamStatus.PAM_CRED_INSUFFICIENT;
 
         string user = Marshal.PtrToStringAnsi(userPtr)!;
-        LibPAM.pam_syslog(pamh, (int)SyslogPriority.LOG_NOTICE, "starting auth for user %s", user);
+        Libpam.pam_syslog(pamh, (int)SyslogPriority.LOG_NOTICE, "starting auth for user %s", user);
 
         // 2) Retrieve JWT/password
-        if (LibPAM.pam_get_authtok(pamh, (int)PamItemTypes.PAM_AUTHTOK, out IntPtr tokPtr) != (int)PamStatus.PAM_SUCCESS)
+        if (Libpam.pam_get_authtok(pamh, (int)PamItemTypes.PAM_AUTHTOK, out IntPtr tokPtr) != (int)PamStatus.PAM_SUCCESS)
             return (int)PamStatus.PAM_CRED_INSUFFICIENT;
 
         string token = Marshal.PtrToStringAnsi(tokPtr)!;

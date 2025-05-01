@@ -1,1 +1,1 @@
-# oidc-pam-sharp
+# pam_oidc_sharp
