@@ -1,0 +1,68 @@
+name: CICD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+      - 'alpha'
+      - 'beta'
+      - 'dev'
+  pull_request:
+    types: [opened, reopened, synchronize]
+  merge_group:
+
+jobs:
+  build-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: global.json
+
+    - name: .NET Build
+      run: dotnet build -c Release
+
+    - name: .NET Test
+      run: dotnet test -c Release --collect:"XPlat Code Coverage" /p:DebugSymbols=true /p:DebugType=full --logger "trx;LogFileName=test-results.trx"
+
+    - name: Test Report
+      uses: dorny/test-reporter@v2
+      if: success() || failure()
+      with:
+        name: pam_oidc_auth Tests
+        path: tests/pam_oidc_auth_tests/TestResults/test-results.trx
+        reporter: dotnet-trx
+
+    - name: Coverage
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: coverage.cobertura.xml
+        fail_ci_if_error: false
+
+  create-release:
+    if: ${{ github.event_name != 'pull_request' }}
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure Git
+      run: |
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v4
+      id: semantic
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        extra_plugins: |
+          conventional-changelog-conventionalcommits
