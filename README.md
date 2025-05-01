@@ -13,16 +13,17 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
 1. Download the appropriate (amd/arm) binary from Releases and copy it to `/usr/lib/security`
 
 1. Create a file named: `/etc/pam.d/oidc_auth`
-1. Enter `auth required pam_oidc_auth.so {Params}`
-  - Name: discovery_url
-    Description: URL to the OpenID Connect discovery document. Eg `https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration`
-    Required: true
-  - Name: audience
-    Description: The audience claim in the JWT token. This is usually the client ID of the application.
-    Required: true
-  - Name: username_claim
-    Description: The claim in the JWT token that will be used as the username. This is usually `preferred_username` or `email`.
-    Required: false, default: `preferred_username`
+1. Enter `auth required pam_oidc_auth.so {Param}=Value`
+  - Parameters:
+    - Name: `discovery_url`
+      - Description: URL to the OpenID Connect discovery document. Eg `https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration`
+      - Required: true
+    - Name: `audience`
+      - Description: The audience claim in the JWT token. This is usually the client ID of the application.
+      - Required: true
+    - Name: `username_claim`
+      - Description: The claim in the JWT token that will be used as the username. This is usually `preferred_username` or `email`.
+      - Required: false, default: `preferred_username`
 
 ```
 auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345 username_claim=preferred_username
