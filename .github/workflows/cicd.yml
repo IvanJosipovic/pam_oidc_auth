@@ -45,7 +45,7 @@ jobs:
       if: success() || failure()
       with:
         name: pam_oidc_auth Tests
-        path: tests/pam_oidc_auth_tests/bin/Release/net9.0/TestResults/test-results.trx
+        path: tests/**/TestResults/test-results.trx
         reporter: dotnet-trx
 
     - name: Coverage
