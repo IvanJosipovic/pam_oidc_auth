@@ -1,0 +1,33 @@
+﻿using Ductus.FluentDocker.Builders;
+using Ductus.FluentDocker.Services;
+
+namespace pam_oidc_auth_tests;
+
+public class TestFixture : IDisposable
+{
+    public ICompositeService compositeService;
+
+    public TestFixture()
+    {
+        compositeService = new Builder()
+            .UseContainer()
+            .UseCompose()
+            .FromFile("docker-compose.yaml")
+            .RemoveOrphans()
+            .AssumeComposeVersion(Ductus.FluentDocker.Model.Compose.ComposeVersion.V2)
+            .ForceRecreate()
+            .WaitForHttp("server", "http://oidc-server-mock:8080/.well-known/openid-configuration", continuation: (resp, cnt) => resp.Body.Contains("jwks_uri") ? 0 : 500)
+            .Build()
+            .Start();
+    }
+
+    public INetworkService GetNetwork()
+    {
+        return compositeService.Containers.First(x => x.Name == "server").GetNetworks()[0];
+    }
+
+    public void Dispose()
+    {
+        compositeService.Dispose();
+    }
+}

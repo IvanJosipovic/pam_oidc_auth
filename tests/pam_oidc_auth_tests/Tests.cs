@@ -1,12 +1,27 @@
 ﻿using Shouldly;
 using System.Text;
 using System.Text.Json;
+using Ductus.FluentDocker.Builders;
+using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Model.Common;
+using Ductus.FluentDocker.Extensions;
+using Ductus.FluentDocker.Services.Extensions;
 
 namespace pam_oidc_auth_tests;
 
-public class Tests
+/// <summary>
+/// Note, tests require a hosts file entry 127.0.0.1 oidc-server-mock
+/// </summary>
+public class Tests : IClassFixture<TestFixture>
 {
-    private async Task<string> GetToken(string clientid = "client-credentials-mock-client", string clientSecret = "client-credentials-mock-client-secret", string scope = "some-app-scope-1")
+    private readonly TestFixture fixture;
+
+    public Tests(TestFixture fixture)
+    {
+        this.fixture = fixture;
+    }
+
+    private static async Task<string> GetToken(string clientid = "client-credentials-mock-client", string clientSecret = "client-credentials-mock-client-secret", string scope = "some-app-scope-1")
     {
         using var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, "http://oidc-server-mock:8080/connect/token")
@@ -51,5 +66,33 @@ public class Tests
     {
         var token = await GetToken();
         pam_oidc_auth.PamModule.ValidateJwt(token, "some-app2", "someuser@company.com", "preferred_username", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData("ubuntu")]
+    [InlineData("debian")]
+    public async Task EndToEnd(string name)
+    {
+        var token = await GetToken();
+
+        new Builder()
+          .DefineImage("testing.loc/" + name)
+          .FromFile("Dockerfile." + name)
+          .Build()
+          .Start();
+
+        var container = new Builder()
+           .UseContainer()
+           .UseImage("testing.loc/" + name)
+           .WithEnvironment("TEST_TOKEN=" + token)
+           .UseNetwork(fixture.GetNetwork())
+           .Build()
+           .Start();
+
+        container.WaitForStopped();
+
+        container.Logs().Read().ShouldContain("pamtester: successfully authenticated");
+
+        container.Dispose();
     }
 }

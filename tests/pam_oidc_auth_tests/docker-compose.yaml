@@ -107,16 +107,13 @@ services:
             ]
           }
         ]
-  ubuntu:
-    container_name: ubuntu
-    build:
-      context: .
-      dockerfile: Dockerfile.ubuntu
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNET_SERVICES_OPTIONS_INLINE: |
-        {
-          "ForwardedHeadersOptions": {
-            "ForwardedHeaders" : "All"
-          }
-        }
+  # ubuntu:
+  #   container_name: ubuntu
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.ubuntu
+  # debian:
+  #   container_name: debian
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.debian
