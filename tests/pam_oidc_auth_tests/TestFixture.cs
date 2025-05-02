@@ -24,6 +24,7 @@ public class TestFixture : IDisposable
 
         // Unsure why this is needed, but it is. The container is not ready until this delay is over.
         Task.Delay(1000).Wait();
+        Console.WriteLine("Started Fixture");
     }
 
     public INetworkService GetNetwork()
