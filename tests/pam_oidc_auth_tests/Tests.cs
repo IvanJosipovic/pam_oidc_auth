@@ -10,7 +10,7 @@ using Ductus.FluentDocker.Services.Extensions;
 namespace pam_oidc_auth_tests;
 
 /// <summary>
-/// Note, tests require a hosts file entry oidc-server-mock 127.0.0.1
+/// Note, tests require a hosts file entry 127.0.0.1 oidc-server-mock
 /// </summary>
 public class Tests : IClassFixture<TestFixture>
 {

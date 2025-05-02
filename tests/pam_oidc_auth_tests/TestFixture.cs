@@ -9,12 +9,10 @@ public class TestFixture : IDisposable
 
     public TestFixture()
     {
-        var file = Path.Combine(Directory.GetCurrentDirectory(), "docker-compose.yaml");
-
         compositeService = new Builder()
             .UseContainer()
             .UseCompose()
-            .FromFile(file)
+            .FromFile("docker-compose.yaml")
             .RemoveOrphans()
             .AssumeComposeVersion(Ductus.FluentDocker.Model.Compose.ComposeVersion.V2)
             .ForceRecreate()
@@ -23,8 +21,7 @@ public class TestFixture : IDisposable
             .Start();
 
         // Unsure why this is needed, but it is. The container is not ready until this delay is over.
-        Task.Delay(1000).Wait();
-        Console.WriteLine("Started Fixture");
+        Task.Delay(10000).Wait();
     }
 
     public INetworkService GetNetwork()
