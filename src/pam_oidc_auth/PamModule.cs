@@ -69,7 +69,7 @@ public static class PamModule
     }
 
     // JWT validation using OIDC configuration
-    private static bool ValidateJwt(string token, string audience, string username, string usernameClaim, string discoveryUrl)
+    public static bool ValidateJwt(string token, string audience, string username, string usernameClaim, string discoveryUrl)
     {
         try
         {
