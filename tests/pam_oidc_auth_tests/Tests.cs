@@ -1,11 +1,26 @@
 ﻿using Shouldly;
 using System.Text;
 using System.Text.Json;
+using Ductus.FluentDocker.Builders;
+using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Model.Common;
+using Ductus.FluentDocker.Extensions;
+using Ductus.FluentDocker.Services.Extensions;
 
 namespace pam_oidc_auth_tests;
 
-public class Tests
+/// <summary>
+/// Note, tests require a hosts file entry oidc-server-mock 127.0.0.1
+/// </summary>
+public class Tests : IClassFixture<TestFixture>
 {
+    TestFixture fixture;
+
+    public Tests(TestFixture fixture)
+    {
+        this.fixture = fixture;
+    }
+
     private async Task<string> GetToken(string clientid = "client-credentials-mock-client", string clientSecret = "client-credentials-mock-client-secret", string scope = "some-app-scope-1")
     {
         using var client = new HttpClient();
@@ -51,5 +66,32 @@ public class Tests
     {
         var token = await GetToken();
         pam_oidc_auth.PamModule.ValidateJwt(token, "some-app2", "someuser@company.com", "preferred_username", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task EndToEndUbuntu()
+    {
+        var token = await GetToken();
+
+        // Build ubuntu image
+        new Builder()
+          .DefineImage("testing.loc/ubuntu")
+          .FromFile("Dockerfile.ubuntu")
+          .Build()
+          .Start();
+
+        var container = new Builder()
+           .UseContainer()
+           .UseImage("testing.loc/ubuntu")
+           .WithEnvironment("TEST_TOKEN=" + token)
+           .UseNetwork(fixture.GetNetwork())
+           .Build()
+           .Start();
+
+        container.WaitForStopped();
+
+        container.Logs().Read().ShouldContain("pamtester: successfully authenticated");
+
+        container.Dispose();
     }
 }
