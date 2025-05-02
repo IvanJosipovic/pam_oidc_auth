@@ -1,7 +1,11 @@
-FROM debian
+#FROM debian
+#stable
 #FROM debian:bookworm
+#FROM debian:bookworm-slim
+#stable -1
 #FROM debian:bullseye
 #FROM debian:bullseye-slim
+FROM postgis/postgis:16-3.5
 
 # Install pamtester todo remove
 RUN set -xe; \
@@ -15,7 +19,7 @@ RUN set -xe; \
 	rm -rf /var/lib/apt/lists/*;
 
 # Install pam_oidc_auth
-ADD https://github.com/IvanJosipovic/pam_oidc_auth/releases/download/v1.0.0-alpha.4/pam_oidc_auth-x64.so /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+ADD https://github.com/IvanJosipovic/pam_oidc_auth/releases/download/v1.0.0-alpha.5/pam_oidc_auth-x64.so /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
 
 # Add PAM config
 RUN echo "auth required pam_oidc_auth.so discovery_url=http://oidc-server-mock:8080/.well-known/openid-configuration audience=some-app" > /etc/pam.d/oidc_auth
