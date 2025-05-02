@@ -31,6 +31,7 @@ jobs:
       uses: docker/setup-compose-action@v1
 
     - name: Star Mock OIDC Server
+      working-directory: tests/pam_oidc_auth_tests
       run: docker compose up -d oidc-server-mock
 
     - name: .NET Test
