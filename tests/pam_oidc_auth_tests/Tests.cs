@@ -68,21 +68,22 @@ public class Tests : IClassFixture<TestFixture>
         pam_oidc_auth.PamModule.ValidateJwt(token, "some-app2", "someuser@company.com", "preferred_username", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
     }
 
-    [Fact]
-    public async Task EndToEndUbuntu()
+    [Theory]
+    [InlineData("ubuntu")]
+    //[InlineData("debian")]
+    public async Task EndToEnd(string name)
     {
         var token = await GetToken();
 
-        // Build ubuntu image
         new Builder()
-          .DefineImage("testing.loc/ubuntu")
-          .FromFile("Dockerfile.ubuntu")
+          .DefineImage("testing.loc/" + name)
+          .FromFile("Dockerfile." + name)
           .Build()
           .Start();
 
         var container = new Builder()
            .UseContainer()
-           .UseImage("testing.loc/ubuntu")
+           .UseImage("testing.loc/" + name)
            .WithEnvironment("TEST_TOKEN=" + token)
            .UseNetwork(fixture.GetNetwork())
            .Build()

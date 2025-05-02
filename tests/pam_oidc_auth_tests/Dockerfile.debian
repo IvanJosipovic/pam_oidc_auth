@@ -1,5 +1,5 @@
-#FROM debian
-FROM debian:bookworm
+FROM debian
+#FROM debian:bookworm
 #FROM debian:bullseye
 #FROM debian:bullseye-slim
 
@@ -20,12 +20,11 @@ ADD https://github.com/IvanJosipovic/pam_oidc_auth/releases/download/v1.0.0-alph
 # Add PAM config
 RUN echo "auth required pam_oidc_auth.so discovery_url=http://oidc-server-mock:8080/.well-known/openid-configuration audience=some-app" > /etc/pam.d/oidc_auth
 
-RUN echo '#!/bin/bash \n pamtester oidc_auth $1 authenticate <<< "$2"; exit $?' > testpam.sh
+RUN echo '#!/bin/bash \n pamtester oidc_auth $1 authenticate <<< "$TEST_TOKEN"; exit $?' > testpam.sh
 RUN chmod +x testpam.sh
 
-ADD https://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb .
-RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+#ADD https://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb .
+#RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
 
-# pamtester -v oidc_auth someuser@company.com authenticate
-CMD [ "sleep", "infinity"]
-#CMD [ "pamtester", "-v", "oidc_auth", "someuser@company.com", "authenticate" ]
+#CMD [ "sleep", "infinity"]
+CMD [ "./testpam.sh", "someuser@company.com"]

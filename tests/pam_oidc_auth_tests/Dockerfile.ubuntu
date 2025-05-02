@@ -7,7 +7,6 @@ RUN set -xe; \
 		"pamtester" \
 		"nano" \
 		"dos2unix" \
-		"wget" \
 	; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
