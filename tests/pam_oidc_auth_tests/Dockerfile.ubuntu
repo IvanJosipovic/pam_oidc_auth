@@ -6,7 +6,6 @@ RUN set -xe; \
 	apt-get install -y --no-install-recommends \
 		"pamtester" \
 		"nano" \
-		"dos2unix" \
 	; \
 	rm -fr /tmp/* ; \
 	rm -rf /var/lib/apt/lists/*;
