@@ -38,7 +38,7 @@ jobs:
 
     - name: .NET Test
       working-directory: tests/pam_oidc_auth_tests
-      run: dotnet test -c Release /p:DebugSymbols=true /p:DebugType=full -- --report-xunittrx --report-xunit-trx-filename test-results.trx --coverage --coverage-output-format cobertura --coverage-output  coverage.cobertura.xml
+      run: dotnet test -c Release /p:DebugSymbols=true /p:DebugType=full -- --report-xunit-trx --report-xunit-trx-filename test-results.trx --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
 
     - name: Test Report
       uses: dorny/test-reporter@v2
