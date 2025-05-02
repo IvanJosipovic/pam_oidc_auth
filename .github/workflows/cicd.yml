@@ -27,6 +27,9 @@ jobs:
     - name: .NET Build
       run: dotnet build -c Release
 
+    - name: Set up Docker Compose
+      uses: docker/setup-compose-action@v1
+
     - name: Star Mock OIDC Server
       run: docker-compose up -d oidc-server-mock
 
