@@ -27,6 +27,17 @@ jobs:
     - name: .NET Build
       run: dotnet build -c Release
 
+    - name: Set up Docker Compose
+      uses: docker/setup-compose-action@v1
+
+    - name: Add hosts to /etc/hosts
+      run: |
+          sudo echo "127.0.0.1 oidc-server-mock" | sudo tee -a /etc/hosts
+
+    - name: Star Mock OIDC Server
+      working-directory: tests/pam_oidc_auth_tests
+      run: docker compose up -d oidc-server-mock
+
     - name: .NET Test
       run: dotnet test -c Release --collect:"XPlat Code Coverage" /p:DebugSymbols=true /p:DebugType=full --logger "trx;LogFileName=test-results.trx"
 

@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.CompilerServices;
 
 namespace pam_oidc_auth;
 
@@ -42,6 +43,9 @@ public static class PamModule
         return valid ? (int)PamStatus.PAM_SUCCESS : (int)PamStatus.PAM_AUTH_ERR;
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "pam_sm_setcred")]
+    public static int pam_sm_setcred(IntPtr pamh, int flags, int argc, IntPtr argv) => (int)PamStatus.PAM_SUCCESS;
+
     // Helper: read argv into string[]
     private static string[] GetArguments(IntPtr argv, int argc)
     {
@@ -69,7 +73,7 @@ public static class PamModule
     }
 
     // JWT validation using OIDC configuration
-    private static bool ValidateJwt(string token, string audience, string username, string usernameClaim, string discoveryUrl)
+    public static bool ValidateJwt(string token, string audience, string username, string usernameClaim, string discoveryUrl)
     {
         try
         {
