@@ -31,7 +31,7 @@ jobs:
       uses: docker/setup-compose-action@v1
 
     - name: Star Mock OIDC Server
-      run: docker-compose up -d oidc-server-mock
+      run: docker compose up -d oidc-server-mock
 
     - name: .NET Test
       run: dotnet test -c Release --collect:"XPlat Code Coverage" /p:DebugSymbols=true /p:DebugType=full --logger "trx;LogFileName=test-results.trx"
