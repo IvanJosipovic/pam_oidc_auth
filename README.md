@@ -33,13 +33,13 @@ auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{
 ## Testing
 1. Download [pamtester](https://pamtester.sourceforge.net)
 
-2. Run `pamtester -v oidc_auth name@company.com authenticate`
+2. Run `pamtester -v pam_oidc_auth name@company.com authenticate`
 
 3. When prompted enter JWT Token
 
 Results should look like
 ```
-pamtester -v oidc_auth name@company.com authenticate
+pamtester -v pam_oidc_auth name@company.com authenticate
 pamtester: invoking pam_start(oidc_auth, name@company.com, ...)
 pamtester: performing operation - authenticate
 Password:

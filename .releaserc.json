@@ -27,9 +27,8 @@
       "@semantic-release/github",
       {
         "assets": [
-          {
-            "path": "dist/**"
-          }
+          { "path": "dist/pam_oidc_auth-x64/pam_oidc_auth.so", "name": "pam_oidc_auth-x64.so" },
+          { "path": "dist/pam_oidc_auth-arm64/pam_oidc_auth.so", "name": "pam_oidc_auth-arm64.so" }
         ]
       }
     ]
