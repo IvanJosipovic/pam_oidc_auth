@@ -33,6 +33,8 @@ jobs:
     - name: Add hosts to /etc/hosts
       run: |
           sudo echo "127.0.0.1 oidc-server-mock" | sudo tee -a /etc/hosts
+          curl -SL https://github.com/docker/compose/releases/download/v2.35.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
 
     - name: .NET Test
       working-directory: tests/pam_oidc_auth_tests
