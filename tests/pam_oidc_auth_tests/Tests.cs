@@ -70,7 +70,7 @@ public class Tests : IClassFixture<TestFixture>
 
     [Theory]
     [InlineData("ubuntu")]
-    //[InlineData("debian")]
+    [InlineData("debian")]
     public async Task EndToEnd(string name)
     {
         var token = await GetToken();
