@@ -33,6 +33,7 @@ RUN chmod +x testpam.sh
 
 ADD https://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb .
 RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+RUN rm libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
 
 #CMD [ "sleep", "infinity"]
 CMD [ "./testpam.sh", "someuser@company.com"]

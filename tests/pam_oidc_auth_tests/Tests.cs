@@ -71,13 +71,18 @@ public class Tests : IClassFixture<TestFixture>
     [Theory]
     [InlineData("ubuntu")]
     [InlineData("debian")]
+    [InlineData("postgres")]
     public async Task EndToEnd(string name)
     {
         var token = await GetToken();
 
+        var path = Path.GetDirectoryName(GetType().Assembly.Location);
+        var filePath = Path.Combine(path, "Dockerfile." + name);
+
         new Builder()
           .DefineImage("testing.loc/" + name)
-          .FromFile("Dockerfile." + name)
+          .FromFile(filePath)
+          .WorkingFolder(new TemplateString(path, true))
           .Build()
           .Start();
 
