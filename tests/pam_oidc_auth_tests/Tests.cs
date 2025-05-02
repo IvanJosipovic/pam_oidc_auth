@@ -14,14 +14,14 @@ namespace pam_oidc_auth_tests;
 /// </summary>
 public class Tests : IClassFixture<TestFixture>
 {
-    TestFixture fixture;
+    private readonly TestFixture fixture;
 
     public Tests(TestFixture fixture)
     {
         this.fixture = fixture;
     }
 
-    private async Task<string> GetToken(string clientid = "client-credentials-mock-client", string clientSecret = "client-credentials-mock-client-secret", string scope = "some-app-scope-1")
+    private static async Task<string> GetToken(string clientid = "client-credentials-mock-client", string clientSecret = "client-credentials-mock-client-secret", string scope = "some-app-scope-1")
     {
         using var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, "http://oidc-server-mock:8080/connect/token")
