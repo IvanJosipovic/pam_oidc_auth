@@ -53,7 +53,7 @@ pamtester: successfully authenticated
 1. Update hb_hba.conf
     - `host all all all pam pamservice=oidc_auth`
 1. Create User
-  ```
-  CREATE ROLE "someuser@company.com" LOGIN PASSWORD NULL;
-  GRANT CONNECT ON DATABASE postgres TO "someuser@company.com";
-  ```
+    ```
+    CREATE ROLE "someuser@company.com" LOGIN PASSWORD NULL;
+    GRANT CONNECT ON DATABASE postgres TO "someuser@company.com";
+    ```
