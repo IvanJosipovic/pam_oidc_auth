@@ -1,4 +1,4 @@
-OpenID Connect (OIDC) Pluggable Authentication Module for Linux
+# OpenID Connect (OIDC) Pluggable Authentication Module for Linux
 
 ## What is this?
 
