@@ -5,15 +5,12 @@ OpenID Connect (OIDC) Pluggable Authentication Module for Linux
 This project is a Pluggable Authentication Module (PAM) for Linux that implements OpenID Connect (OIDC)-based authentication.
 
 ## Features
+- Automatic discovery via the `/.well‑known/openid‑configuration` endpoint
 - JWT Validation
-  - Audience
-  - Expiry
-  - Issuer
-  - Signature & keys
-- Configurable username claim
-  - By default its mapped to `preferred_username` claim
-- AMD64 and ARM64 support
-
+  - Signature and key verification
+  - Issuer, audience, expiry, and not‑before (`nbf`) checks
+- Configurable username claim (defaults to `preferred_username`)
+- Pre‑built binaries for amd64 and arm64
 ## Installation
 1. Download the appropriate (amd/arm) binary from [Releases](https://github.com/IvanJosipovic/pam_oidc_auth/releases) and copy it to
     - x64  `/lib/x86_64-linux-gnu/security/pam_oidc_auth.so`
