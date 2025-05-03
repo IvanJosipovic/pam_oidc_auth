@@ -25,11 +25,11 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
       - Description: The audience claim in the JWT token. This is usually the client ID of the application.
       - Required: true
     - Name: `username_claim`
-      - Description: The claim in the JWT token that will be used as the username. This is usually `sub` or `preferred_username`.
+      - Description: The claim in the JWT token that will be used as the username. This is usually `sub`.
       - Required: false, default: `sub`
 
 ```
-auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345 username_claim=preferred_username
+auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345 username_claim=client_id
 ```
 
 ## Testing
