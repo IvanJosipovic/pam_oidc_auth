@@ -10,8 +10,9 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
 - AMD64 and ARM64 support
 
 ## Installation
-1. Download the appropriate (amd/arm) binary from Releases and copy it to `/usr/lib/security`
-
+1. Download the appropriate (amd/arm) binary from Releases and copy it to
+  - x64  `/lib/x86_64-linux-gnu/security/pam_oidc_auth.so`
+  - axm64 `/lib/aarch64-linux-gnu/security/pam_oidc_auth.so`
 1. Create a file named: `/etc/pam.d/oidc_auth`
 1. Enter `auth required pam_oidc_auth.so {Param}=Value`
   - Parameters:
@@ -33,15 +34,26 @@ auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{
 ## Testing
 1. Download [pamtester](https://pamtester.sourceforge.net)
 
-2. Run `pamtester -v pam_oidc_auth name@company.com authenticate`
+2. Run `pamtester -v oidc_auth name@company.com authenticate`
 
 3. When prompted enter JWT Token
 
 Results should look like
 ```
-pamtester -v pam_oidc_auth name@company.com authenticate
+pamtester -v oidc_auth name@company.com authenticate
 pamtester: invoking pam_start(oidc_auth, name@company.com, ...)
 pamtester: performing operation - authenticate
 Password:
 pamtester: successfully authenticated
 ```
+
+## Postgres
+1. Complete the Installation steps above
+1. Edit `/etc/pam.d/oidc_auth` and append on a new line `account  sufficient  pam_permit.so`
+1. Update hb_hba.conf
+  - `host all all all pam pamservice=oidc_auth`
+1. Create User
+  ```
+  CREATE ROLE "someuser@company.com" LOGIN PASSWORD NULL;
+  GRANT CONNECT ON DATABASE postgres TO "someuser@company.com";
+  ```
