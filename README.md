@@ -57,3 +57,4 @@ pamtester: successfully authenticated
     CREATE ROLE "someuser@company.com" LOGIN PASSWORD NULL;
     GRANT CONNECT ON DATABASE postgres TO "someuser@company.com";
     ```
+[Example](/tests/pam_oidc_auth_tests/Dockerfile.postgres#L63-L69)
