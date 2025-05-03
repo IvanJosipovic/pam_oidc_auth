@@ -45,27 +45,27 @@ public class Tests : IClassFixture<TestFixture>
     public async Task Valid()
     {
         var token = await GetToken();
-        pam_oidc_auth.PamModule.ValidateJwt(token, "some-app", "someuser@company.com", "preferred_username", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeTrue();
+        pam_oidc_auth.PamModule.ValidateJwt(token, "some-app", "someuser@company.com", "sub", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeTrue();
     }
 
     [Fact]
     public void BadToken()
     {
-        pam_oidc_auth.PamModule.ValidateJwt("fake", "some-app", "someuser@company.com", "preferred_username", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
+        pam_oidc_auth.PamModule.ValidateJwt("fake", "some-app", "someuser@company.com", "sub", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
     }
 
     [Fact]
     public async Task BadUserName()
     {
         var token = await GetToken();
-        pam_oidc_auth.PamModule.ValidateJwt(token, "some-app", "someuser2@company.com", "preferred_username", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
+        pam_oidc_auth.PamModule.ValidateJwt(token, "some-app", "someuser2@company.com", "sub", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
     }
 
     [Fact]
     public async Task BadAudience()
     {
         var token = await GetToken();
-        pam_oidc_auth.PamModule.ValidateJwt(token, "some-app2", "someuser@company.com", "preferred_username", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
+        pam_oidc_auth.PamModule.ValidateJwt(token, "some-app2", "someuser@company.com", "sub", "http://oidc-server-mock:8080/.well-known/openid-configuration").ShouldBeFalse();
     }
 
     [Theory]

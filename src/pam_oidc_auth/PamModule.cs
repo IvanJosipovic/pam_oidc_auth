@@ -3,7 +3,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
 
 namespace pam_oidc_auth;
 
@@ -95,9 +94,11 @@ public static class PamModule
                 ValidIssuer = config.Issuer,
             };
 
-            var principal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _);
+            new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 
-            var nameClaim = principal.FindFirst(usernameClaim);
+            var jwtToken = (JwtSecurityToken)validatedToken;
+
+            var nameClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == usernameClaim);
 
             return nameClaim is not null && string.Equals(nameClaim.Value, username, StringComparison.OrdinalIgnoreCase);
         }
