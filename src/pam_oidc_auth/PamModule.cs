@@ -43,6 +43,9 @@ public static class PamModule
         return valid ? (int)PamStatus.PAM_SUCCESS : (int)PamStatus.PAM_AUTH_ERR;
     }
 
+    [UnmanagedCallersOnly(EntryPoint = "pam_sm_acct_mgmt")]
+    public static int pam_sm_acct_mgmt(IntPtr pamh, int flags, int argc, IntPtr argv) => (int)PamStatus.PAM_SUCCESS;
+
     [UnmanagedCallersOnly(EntryPoint = "pam_sm_setcred")]
     public static int pam_sm_setcred(IntPtr pamh, int flags, int argc, IntPtr argv) => (int)PamStatus.PAM_SUCCESS;
 
