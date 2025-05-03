@@ -25,11 +25,11 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
       - Description: The audience claim in the JWT token. This is usually the client ID of the application.
       - Required: true
     - Name: `username_claim`
-      - Description: The claim in the JWT token that will be used as the username. This is usually `sub`.
+      - Description: The claim in the JWT token that will be used as the username. This is usually `sub`
       - Required: false, default: `sub`
 
 ```
-auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345 username_claim=client_id
+auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345
 ```
 
 ## Testing
@@ -50,7 +50,11 @@ pamtester: successfully authenticated
 
 ## Postgres
 1. Complete the Installation steps above
-1. Edit `/etc/pam.d/oidc_auth` and append on a new line `account  sufficient  pam_permit.so`
+1. Edit `/etc/pam.d/oidc_auth` and append on a new line `account sufficient pam_oidc_auth.so`
+    ```
+    auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345
+    account sufficient pam_oidc_auth.so
+    ```
 1. Update pg_hba.conf
     - `host all all all pam pamservice=oidc_auth`
 1. Create User
