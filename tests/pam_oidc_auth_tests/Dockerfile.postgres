@@ -1,3 +1,5 @@
+#FROM postgis/postgis:16-3.5
+#FROM postgres:16-bullseye
 FROM postgres:16-bookworm
 
 #Do not split the description, otherwise we will see a blank space in the labels
@@ -72,12 +74,6 @@ RUN chmod +x testpam.sh
 ADD https://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb .
 RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
 RUN rm libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
-
-#RUN chown root:root  /lib/x86_64-linux-gnu/security/oidc-pam-sharp.so
-
-
-
-#/var/lib/postgresql/data/pg_hba.conf
 
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
