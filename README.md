@@ -51,7 +51,7 @@ pamtester: successfully authenticated
 1. Complete the Installation steps above
 1. Edit `/etc/pam.d/oidc_auth` and append on a new line `account  sufficient  pam_permit.so`
 1. Update hb_hba.conf
-  - `host all all all pam pamservice=oidc_auth`
+    - `host all all all pam pamservice=oidc_auth`
 1. Create User
   ```
   CREATE ROLE "someuser@company.com" LOGIN PASSWORD NULL;
