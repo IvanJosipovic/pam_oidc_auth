@@ -12,7 +12,7 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
 - Configurable username claim (defaults to `sub`)
 - Pre‑built binaries for x64 and arm64
 ## Installation
-1. Download the appropriate (x64/arm64) binary from [Releases](https://github.com/IvanJosipovic/pam_oidc_auth/releases) and copy it to
+1. Download the appropriate binary from [Releases](https://github.com/IvanJosipovic/pam_oidc_auth/releases) and copy it to
     - x64  `/lib/x86_64-linux-gnu/security/pam_oidc_auth.so`
     - arm64 `/lib/aarch64-linux-gnu/security/pam_oidc_auth.so`
 1. Create a file named: `/etc/pam.d/oidc_auth`
