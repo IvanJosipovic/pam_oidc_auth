@@ -36,7 +36,7 @@ public static class PamModule
             return (int)PamStatus.PAM_AUTHINFO_UNAVAIL;
 
         if (!opts.TryGetValue("username_claim", out string? usernameClaim))
-            usernameClaim = "preferred_username";
+            usernameClaim = "sub";
 
         // 4) Validate JWT
         bool valid = ValidateJwt(token, audience, user, usernameClaim, discoveryUrl);

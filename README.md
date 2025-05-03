@@ -9,7 +9,7 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
 - JWT Validation
   - Signature and key verification
   - Issuer, audience, expiry, and not‑before (`nbf`) checks
-- Configurable username claim (defaults to `preferred_username`)
+- Configurable username claim (defaults to `sub`)
 - Pre‑built binaries for amd64 and arm64
 ## Installation
 1. Download the appropriate (amd/arm) binary from [Releases](https://github.com/IvanJosipovic/pam_oidc_auth/releases) and copy it to
@@ -25,8 +25,8 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
       - Description: The audience claim in the JWT token. This is usually the client ID of the application.
       - Required: true
     - Name: `username_claim`
-      - Description: The claim in the JWT token that will be used as the username. This is usually `preferred_username` or `email`.
-      - Required: false, default: `preferred_username`
+      - Description: The claim in the JWT token that will be used as the username. This is usually `sub` or `preferred_username`.
+      - Required: false, default: `sub`
 
 ```
 auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345 username_claim=preferred_username
