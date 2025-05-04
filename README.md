@@ -16,7 +16,11 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
     - x64  `/lib/x86_64-linux-gnu/security/pam_oidc_auth.so`
     - arm64 `/lib/aarch64-linux-gnu/security/pam_oidc_auth.so`
 1. Create a file named: `/etc/pam.d/oidc_auth`
-1. Enter `auth required pam_oidc_auth.so {Param}=Value`
+1. Enter and update the parameters
+    ```
+    auth required pam_oidc_auth.so discovery_url=https://{issuer}/.well-known/openid-configuration audience={audience}
+    account required pam_oidc_auth.so
+    ```
   - Parameters:
     - Name: `discovery_url`
       - Description: URL to the OpenID Connect discovery document. Eg `https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration`
@@ -37,7 +41,7 @@ auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{
 
 2. Run `pamtester -v oidc_auth name@company.com authenticate`
 
-3. When prompted enter JWT Token
+3. When prompted, enter a JWT Token provided by your issuer
 
 Results should look like
 ```
@@ -50,14 +54,9 @@ pamtester: successfully authenticated
 
 ## Postgres
 1. Complete the Installation steps above
-1. Edit `/etc/pam.d/oidc_auth` and append on a new line `account sufficient pam_oidc_auth.so`
-    ```
-    auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345
-    account sufficient pam_oidc_auth.so
-    ```
-1. Update pg_hba.conf
+1. Update `/var/lib/postgresql/data/pg_hba.conf`
     - `host all all all pam pamservice=oidc_auth`
-1. Create User
+1. Create User, replace someuser@company.com with a value matching username which defaults to the `sub` claim.
     ```
     CREATE ROLE "someuser@company.com" LOGIN PASSWORD NULL;
     GRANT CONNECT ON DATABASE postgres TO "someuser@company.com";
