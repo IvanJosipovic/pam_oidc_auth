@@ -28,8 +28,8 @@ RUN echo '#!/bin/bash \n pamtester oidc_auth $1 authenticate <<< "$TEST_TOKEN"; 
 RUN chmod +x testpam.sh
 
 # Without libssl a error would be displayed 'No usable version of libssl was found'
-ADD https://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb .
-RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+#ADD https://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb .
+#RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
 
 #CMD [ "sleep", "infinity"]
 CMD [ "./testpam.sh", "someuser@company.com"]
