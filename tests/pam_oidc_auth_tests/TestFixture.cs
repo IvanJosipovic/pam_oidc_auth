@@ -23,7 +23,6 @@ public class TestFixture : IDisposable
             .Build()
             .Start();
 
-
         var dir = Directory.GetCurrentDirectory();
 
         var path = Path.Combine("..", "..", "..", "..", "..", "src", "pam_oidc_auth");
@@ -42,7 +41,7 @@ public class TestFixture : IDisposable
             .UseImage("testing.loc/" + name)
             .Build()
             .Start()
-            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(path, "pam_oidc_auth.so"));
+            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(dir, "pam_oidc_auth.so"));
 
         cont.WaitForStopped();
     }
