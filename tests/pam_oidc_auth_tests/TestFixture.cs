@@ -42,8 +42,6 @@ public class TestFixture : IDisposable
             .Build()
             .Start()
             .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(dir, "pam_oidc_auth.so"));
-
-        cont.WaitForStopped();
     }
 
     public INetworkService GetNetwork()
