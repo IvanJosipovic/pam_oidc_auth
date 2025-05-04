@@ -30,8 +30,8 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
         - Description: The audience claim in the JWT token. This is usually the client ID of the application.
         - Required: true
       - Name: `username_claim`
-        - Description: The claim in the JWT token that will be used as the username. This is usually `sub`
-        - Required: false, default: `sub`
+         Description: The claim in the JWT token that will be used as the username. If not specified, it defaults to `sub`.
+        - Required: false
 
 ## Testing
 1. Download [pamtester](https://pamtester.sourceforge.net)
