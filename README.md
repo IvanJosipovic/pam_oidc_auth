@@ -33,10 +33,6 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
       - Description: The claim in the JWT token that will be used as the username. This is usually `sub`
       - Required: false, default: `sub`
 
-```
-auth required pam_oidc_auth.so discovery_url=https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration audience=f6e6e114-1007-49e0-b15d-dd4812968345
-```
-
 ## Testing
 1. Download [pamtester](https://pamtester.sourceforge.net)
 
