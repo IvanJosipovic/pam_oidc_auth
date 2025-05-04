@@ -1,5 +1,4 @@
 ﻿using Ductus.FluentDocker.Builders;
-using Ductus.FluentDocker.Extensions;
 using Ductus.FluentDocker.Model.Common;
 using Ductus.FluentDocker.Services;
 using Ductus.FluentDocker.Services.Extensions;
@@ -36,7 +35,7 @@ public class TestFixture : IDisposable
           .Build()
           .Start();
 
-        var cont = new Builder()
+        new Builder()
             .UseContainer()
             .UseImage("testing.loc/" + name)
             .Build()
