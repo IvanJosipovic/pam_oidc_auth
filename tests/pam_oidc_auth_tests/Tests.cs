@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.Json;
 using Ductus.FluentDocker.Builders;
-using Ductus.FluentDocker.Services;
 using Ductus.FluentDocker.Model.Common;
 using Ductus.FluentDocker.Extensions;
 using Ductus.FluentDocker.Services.Extensions;

@@ -1,5 +1,7 @@
 ﻿using Ductus.FluentDocker.Builders;
+using Ductus.FluentDocker.Model.Common;
 using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Services.Extensions;
 
 namespace pam_oidc_auth_tests;
 
@@ -19,6 +21,27 @@ public class TestFixture : IDisposable
             .WaitForHttp("server", "http://oidc-server-mock:8080/.well-known/openid-configuration", continuation: (resp, cnt) => resp.Body.Contains("jwks_uri") ? 0 : 500)
             .Build()
             .Start();
+
+
+        var dir = Directory.GetCurrentDirectory();
+
+        var path = Path.Combine("..", "..", "..", "..", "..", "src", "pam_oidc_auth");
+
+        var name = "pam_oidc_auth";
+
+        new Builder()
+          .DefineImage("testing.loc/" + name)
+          .FromFile(Path.Combine(path, "Dockerfile"))
+          .WorkingFolder(new TemplateString(path, true))
+          .Build()
+          .Start();
+
+        new Builder()
+            .UseContainer()
+            .UseImage("testing.loc/" + name)
+            .Build()
+            .Start()
+            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(path, "pam_oidc_auth.so"));
     }
 
     public INetworkService GetNetwork()

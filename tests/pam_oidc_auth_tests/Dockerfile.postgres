@@ -61,7 +61,7 @@ RUN set -xe; \
 	rm -rf /var/lib/apt/lists/*;
 
 # Install pam_oidc_auth
-ADD https://github.com/IvanJosipovic/pam_oidc_auth/releases/download/v1.0.0-alpha.5/pam_oidc_auth-x64.so /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+ADD pam_oidc_auth.so /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
 # Add Permissions
 RUN chmod 555 /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
 
