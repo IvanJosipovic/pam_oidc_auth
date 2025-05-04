@@ -22,16 +22,16 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
     auth required pam_oidc_auth.so discovery_url=https://{issuer}/.well-known/openid-configuration audience={audience}
     account required pam_oidc_auth.so
     ```
-  - Parameters:
-    - Name: `discovery_url`
-      - Description: URL to the OpenID Connect discovery document. Eg `https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration`
-      - Required: true
-    - Name: `audience`
-      - Description: The audience claim in the JWT token. This is usually the client ID of the application.
-      - Required: true
-    - Name: `username_claim`
-      - Description: The claim in the JWT token that will be used as the username. This is usually `sub`
-      - Required: false, default: `sub`
+    - Parameters:
+      - Name: `discovery_url`
+        - Description: URL to the OpenID Connect discovery document. Eg `https://login.microsoftonline.com/{TenantId}/v2.0/.well-known/openid-configuration`
+        - Required: true
+      - Name: `audience`
+        - Description: The audience claim in the JWT token. This is usually the client ID of the application.
+        - Required: true
+      - Name: `username_claim`
+        - Description: The claim in the JWT token that will be used as the username. This is usually `sub`
+        - Required: false, default: `sub`
 
 ## Testing
 1. Download [pamtester](https://pamtester.sourceforge.net)
