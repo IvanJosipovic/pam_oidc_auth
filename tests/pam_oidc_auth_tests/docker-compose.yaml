@@ -95,7 +95,7 @@ services:
             "ClientClaimsPrefix": "",
             "Claims": [
               {
-                "Type": "preferred_username",
+                "Type": "sub",
                 "Value": "someuser@company.com",
                 "ValueType": "string"
               },

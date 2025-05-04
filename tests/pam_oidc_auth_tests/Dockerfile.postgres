@@ -1,0 +1,48 @@
+
+#FROM postgres:16-bookworm
+#FROM postgres:16-bullseye
+#FROM postgis/postgis:16-3.5
+FROM ghcr.io/cloudnative-pg/postgresql:16-bookworm
+
+USER root
+
+# Install addons
+RUN apt-get update \
+    && apt-get install -y lsb-release wget \
+    && echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
+    && wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
+    && apt-get update \
+    && apt-get install -y \
+        "timescaledb-2-postgresql-${PG_MAJOR}=${TIMESCALE_VERSION}*" \
+	    "timescaledb-toolkit-postgresql-${PG_MAJOR}" \
+        "postgresql-${PG_MAJOR}-cron" \
+    && apt-get remove -y lsb-release wget \
+    && 	rm -fr /tmp/* \
+    && 	rm -rf /var/lib/apt/lists/*
+
+# Install pamtester
+RUN set -xe; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        "pamtester" \
+        "nano" \
+    ; \
+    rm -fr /tmp/* ; \
+    rm -rf /var/lib/apt/lists/*;
+
+# Install pam_oidc_auth
+ADD pam_oidc_auth.so /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+
+# Add Permissions
+RUN chmod 644 /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+
+# Add PAM config
+RUN echo "auth required pam_oidc_auth.so discovery_url=http://oidc-server-mock:8080/.well-known/openid-configuration audience=some-app username_claim=sub" > /etc/pam.d/oidc_auth
+RUN echo "account required pam_oidc_auth.so" >> /etc/pam.d/oidc_auth
+
+RUN echo '#!/bin/bash \n pamtester oidc_auth $1 authenticate <<< "$TEST_TOKEN"; exit $?' > testpam.sh
+RUN chmod +x testpam.sh
+
+USER 26
+
+CMD [ "./testpam.sh", "someuser@company.com"]

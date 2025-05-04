@@ -3,7 +3,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
 
 namespace pam_oidc_auth;
 
@@ -36,12 +35,15 @@ public static class PamModule
             return (int)PamStatus.PAM_AUTHINFO_UNAVAIL;
 
         if (!opts.TryGetValue("username_claim", out string? usernameClaim))
-            usernameClaim = "preferred_username";
+            usernameClaim = "sub";
 
         // 4) Validate JWT
         bool valid = ValidateJwt(token, audience, user, usernameClaim, discoveryUrl);
         return valid ? (int)PamStatus.PAM_SUCCESS : (int)PamStatus.PAM_AUTH_ERR;
     }
+
+    [UnmanagedCallersOnly(EntryPoint = "pam_sm_acct_mgmt")]
+    public static int pam_sm_acct_mgmt(IntPtr pamh, int flags, int argc, IntPtr argv) => (int)PamStatus.PAM_SUCCESS;
 
     [UnmanagedCallersOnly(EntryPoint = "pam_sm_setcred")]
     public static int pam_sm_setcred(IntPtr pamh, int flags, int argc, IntPtr argv) => (int)PamStatus.PAM_SUCCESS;
@@ -92,9 +94,11 @@ public static class PamModule
                 ValidIssuer = config.Issuer,
             };
 
-            var principal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _);
+            new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 
-            var nameClaim = principal.FindFirst(usernameClaim);
+            var jwtToken = (JwtSecurityToken)validatedToken;
+
+            var nameClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == usernameClaim);
 
             return nameClaim is not null && string.Equals(nameClaim.Value, username, StringComparison.OrdinalIgnoreCase);
         }
