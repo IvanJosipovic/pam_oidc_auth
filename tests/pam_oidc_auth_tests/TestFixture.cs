@@ -1,4 +1,5 @@
 ﻿using Ductus.FluentDocker.Builders;
+using Ductus.FluentDocker.Extensions;
 using Ductus.FluentDocker.Model.Common;
 using Ductus.FluentDocker.Services;
 using Ductus.FluentDocker.Services.Extensions;
@@ -36,12 +37,14 @@ public class TestFixture : IDisposable
           .Build()
           .Start();
 
-        using (new Builder()
+        var cont = new Builder()
             .UseContainer()
             .UseImage("testing.loc/" + name)
             .Build()
             .Start()
-            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(path, "pam_oidc_auth.so"))) { }
+            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(path, "pam_oidc_auth.so"));
+
+        cont.WaitForStopped();
     }
 
     public INetworkService GetNetwork()
