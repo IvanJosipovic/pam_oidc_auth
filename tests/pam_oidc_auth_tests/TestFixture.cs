@@ -36,12 +36,12 @@ public class TestFixture : IDisposable
           .Build()
           .Start();
 
-        new Builder()
+        using (new Builder()
             .UseContainer()
             .UseImage("testing.loc/" + name)
             .Build()
             .Start()
-            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(path, "pam_oidc_auth.so"));
+            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(path, "pam_oidc_auth.so"))) { }
     }
 
     public INetworkService GetNetwork()
