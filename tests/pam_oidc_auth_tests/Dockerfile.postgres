@@ -1,78 +1,48 @@
 
-FROM postgres:16-bookworm
+#FROM postgres:16-bookworm
 #FROM postgres:16-bullseye
 #FROM postgis/postgis:16-3.5
+FROM ghcr.io/cloudnative-pg/postgresql:16-bookworm
 
-#Do not split the description, otherwise we will see a blank space in the labels
-LABEL name="PostgreSQL + TimescaleDB + PostGIS Container Images" \
-	version="${PG_VERSION}" \
-	release="62" \
-	summary="PostgreSQL + TimescaleDB + PostGIS Container images." \
-	description="This Docker image contains PostgreSQL, TimescaleDB, PostGIS and Barman Cloud based on Postgres ${PG_VERSION}."
+USER root
 
-COPY requirements.txt /
-ARG TIMESCALE_VERSION="2.19.3"
-
-# Install timescaledb
+# Install addons
 RUN apt-get update \
     && apt-get install -y lsb-release wget \
     && echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
     && wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
     && apt-get update \
-    && apt-get install -y "timescaledb-2-postgresql-${PG_MAJOR}=${TIMESCALE_VERSION}*" "timescaledb-toolkit-postgresql-${PG_MAJOR}" postgresql-16-cron \
+    && apt-get install -y \
+        "timescaledb-2-postgresql-${PG_MAJOR}=${TIMESCALE_VERSION}*" \
+	    "timescaledb-toolkit-postgresql-${PG_MAJOR}" \
+        "postgresql-${PG_MAJOR}-cron" \
     && apt-get remove -y lsb-release wget \
     && 	rm -fr /tmp/* \
     && 	rm -rf /var/lib/apt/lists/*
 
-# Install additional extensions
+# Install pamtester
 RUN set -xe; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		"postgresql-${PG_MAJOR}-pgaudit" \
-		"postgresql-${PG_MAJOR}-pgvector" \
-		"postgresql-${PG_MAJOR}-pg-failover-slots" \
-	; \
-	rm -fr /tmp/* ; \
-	rm -rf /var/lib/apt/lists/*;
-
-# Install barman-cloud
-RUN set -xe; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		# We require build-essential and python3-dev to build lz4 on arm64 since there isn't a pre-compiled wheel available
-		build-essential python3-dev \
-		python3-pip \
-		python3-psycopg2 \
-		python3-setuptools \
-	; \
-	pip3 install --break-system-packages --upgrade pip; \
-	# TODO: Remove --no-deps once https://github.com/pypa/pip/issues/9644 is solved
-	pip3 install --break-system-packages --no-deps -r requirements.txt; \
-	apt-get remove -y --purge --autoremove build-essential python3-dev; \
-	rm -rf /var/lib/apt/lists/*;
-
-# Install pamtester todo remove
-RUN set -xe; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		"pamtester" \
-		"nano" \
-	; \
-	rm -fr /tmp/* ; \
-	rm -rf /var/lib/apt/lists/*;
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        "pamtester" \
+        "nano" \
+    ; \
+    rm -fr /tmp/* ; \
+    rm -rf /var/lib/apt/lists/*;
 
 # Install pam_oidc_auth
 ADD pam_oidc_auth.so /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+
 # Add Permissions
-RUN chmod 555 /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+RUN chmod 644 /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
 
 # Add PAM config
-RUN echo "auth required pam_oidc_auth.so discovery_url=http://oidc-server-mock:8080/.well-known/openid-configuration audience=some-app username_claim=sub\naccount required pam_oidc_auth.so" > /etc/pam.d/oidc_auth
+RUN echo "auth required pam_oidc_auth.so discovery_url=http://oidc-server-mock:8080/.well-known/openid-configuration audience=some-app username_claim=sub" > /etc/pam.d/oidc_auth
+RUN echo "account required pam_oidc_auth.so" >> /etc/pam.d/oidc_auth
 
 RUN echo '#!/bin/bash \n pamtester oidc_auth $1 authenticate <<< "$TEST_TOKEN"; exit $?' > testpam.sh
 RUN chmod +x testpam.sh
 
-# Change the uid of postgres to 26
-RUN usermod -u 26 postgres
 USER 26
+
 CMD [ "./testpam.sh", "someuser@company.com"]
