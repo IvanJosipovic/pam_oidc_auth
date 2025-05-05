@@ -5,7 +5,6 @@
         <OutputType>Library</OutputType>
         <PublishAot>true</PublishAot>
         <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
-        <PublishTrimmed>true</PublishTrimmed>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -32,7 +31,6 @@
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <DebugSymbols>false</DebugSymbols>
         <DebugType>None</DebugType>
-        <DebuggerSupport>false</DebuggerSupport>
     </PropertyGroup>
 
     <ItemGroup>
