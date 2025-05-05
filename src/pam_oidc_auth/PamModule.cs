@@ -1,90 +1,51 @@
-﻿using System.Runtime.InteropServices;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace pam_oidc_auth;
 
-public static class PamModule
+public class PamModule
 {
-    [UnmanagedCallersOnly(EntryPoint = "pam_sm_authenticate")]
-    public static int pam_sm_authenticate(IntPtr pamh, int flags, int argc, IntPtr argv)
+    static async Task Main(string[] args)
     {
-        // 1) Retrieve username
-        if (Libpam.pam_get_user(pamh, out IntPtr userPtr) != (int)PamStatus.PAM_SUCCESS)
-            return (int)PamStatus.PAM_CRED_INSUFFICIENT;
+        // PAM_RHOST, PAM_RUSER, PAM_SERVICE, PAM_TTY, PAM_USER and PAM_TYPE
 
-        string user = Marshal.PtrToStringAnsi(userPtr)!;
-        Libpam.pam_syslog(pamh, (int)SyslogPriority.LOG_NOTICE, "starting auth for user %s", user);
+        //var PARM_TYPE = Environment.GetEnvironmentVariable("PAM_TYPE") ?? string.Empty;
+        var PAM_USER = Environment.GetEnvironmentVariable("PAM_USER") ?? string.Empty;
+        Console.WriteLine("PAM_USER: " + PAM_USER);
+        //if (PAM_TYPE == PamItemTypes.PAM_AUTHTOK_TYPE)
+        //{
 
-        // 2) Retrieve JWT/password
-        if (Libpam.pam_get_authtok(pamh, (int)PamItemTypes.PAM_AUTHTOK, out IntPtr tokPtr) != (int)PamStatus.PAM_SUCCESS)
-            return (int)PamStatus.PAM_CRED_INSUFFICIENT;
+        //}
 
-        string token = Marshal.PtrToStringAnsi(tokPtr)!;
+        string? token = Console.ReadLine();
+        string? token2 = Console.ReadLine();
 
-        // 3) Parse module arguments
-        string[] args = GetArguments(argv, argc);
-        var opts = ParseOptions(args);
+        Console.WriteLine("Token: " + token);
+        Console.WriteLine("Token2: " + token2);
 
-        if (!opts.TryGetValue("discovery_url", out string? discoveryUrl))
-            return (int)PamStatus.PAM_AUTHINFO_UNAVAIL;
 
-        if (!opts.TryGetValue("audience", out string? audience))
-            return (int)PamStatus.PAM_AUTHINFO_UNAVAIL;
+        var result = await ValidateJwt(token!, "some-app", "someuser@company.com", "sub", "http://oidc-server-mock:8080/.well-known/openid-configuration");
 
-        if (!opts.TryGetValue("username_claim", out string? usernameClaim))
-            usernameClaim = "sub";
-
-        // 4) Validate JWT
-        bool valid = ValidateJwt(token, audience, user, usernameClaim, discoveryUrl);
-        return valid ? (int)PamStatus.PAM_SUCCESS : (int)PamStatus.PAM_AUTH_ERR;
-    }
-
-    [UnmanagedCallersOnly(EntryPoint = "pam_sm_acct_mgmt")]
-    public static int pam_sm_acct_mgmt(IntPtr pamh, int flags, int argc, IntPtr argv) => (int)PamStatus.PAM_SUCCESS;
-
-    [UnmanagedCallersOnly(EntryPoint = "pam_sm_setcred")]
-    public static int pam_sm_setcred(IntPtr pamh, int flags, int argc, IntPtr argv) => (int)PamStatus.PAM_SUCCESS;
-
-    // Helper: read argv into string[]
-    private static string[] GetArguments(IntPtr argv, int argc)
-    {
-        var result = new string[argc];
-        for (int i = 0; i < argc; i++)
+        if (result)
         {
-            IntPtr ptr = Marshal.ReadIntPtr(argv, i * IntPtr.Size);
-            result[i] = Marshal.PtrToStringAnsi(ptr)!;
+            Environment.Exit(0);
+            return;
         }
-        return result;
-    }
 
-    // Helper: parse key=value args
-    private static Dictionary<string, string> ParseOptions(string[] args)
-    {
-        var opts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        foreach (string arg in args)
-        {
-            var parts = arg.Split('=', 2);
-            var key = parts[0].Trim();
-            var val = parts.Length > 1 ? parts[1].Trim() : string.Empty;
-            opts[key] = val;
-        }
-        return opts;
+        Environment.Exit(1);
+        return;
     }
 
     // JWT validation using OIDC configuration
-    public static bool ValidateJwt(string token, string audience, string username, string usernameClaim, string discoveryUrl)
+    public static async Task<bool> ValidateJwt(string token, string audience, string username, string usernameClaim, string discoveryUrl)
     {
         try
         {
             var http = new HttpDocumentRetriever { RequireHttps = discoveryUrl.StartsWith("https://") };
 
-            var config = OpenIdConnectConfigurationRetriever.GetAsync(discoveryUrl, http, CancellationToken.None)
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
+            var config = await OpenIdConnectConfigurationRetriever.GetAsync(discoveryUrl, http, CancellationToken.None).ConfigureAwait(false);
 
             var validationParameters = new TokenValidationParameters
             {

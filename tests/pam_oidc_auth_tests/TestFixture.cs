@@ -40,7 +40,7 @@ public class TestFixture : IDisposable
             .UseImage("testing.loc/" + name)
             .Build()
             .Start()
-            .CopyFrom("/app/publish/pam_oidc_auth.so", Path.Combine(dir, "pam_oidc_auth.so"));
+            .CopyFrom("/app/publish/pam_oidc_auth", Path.Combine(dir, "pam_oidc_auth"));
     }
 
     public INetworkService GetNetwork()

@@ -31,18 +31,22 @@ RUN set -xe; \
     rm -rf /var/lib/apt/lists/*;
 
 # Install pam_oidc_auth
-ADD pam_oidc_auth.so /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+ADD pam_oidc_auth /usr/local/bin/pam_oidc_auth
 
 # Add Permissions
-RUN chmod 555 /lib/x86_64-linux-gnu/security/pam_oidc_auth.so
+RUN chmod 555 /usr/local/bin/pam_oidc_auth
 
 # Add PAM config
-RUN echo "auth required pam_oidc_auth.so discovery_url=http://oidc-server-mock:8080/.well-known/openid-configuration audience=some-app username_claim=sub" > /etc/pam.d/oidc_auth
+RUN echo "auth required pam_exec.so expose_authtok log=/var/tmp/auth.log /usr/local/bin/pam_oidc_auth" > /etc/pam.d/oidc_auth
 RUN echo "account required pam_permit.so" >> /etc/pam.d/oidc_auth
 
 RUN echo '#!/bin/bash \n pamtester oidc_auth $1 authenticate <<< "$TEST_TOKEN"; exit $?' > testpam.sh
 RUN chmod +x testpam.sh
 
+# Without libssl a error would be displayed 'No usable version of libssl was found'
+ADD https://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb .
+RUN dpkg -i libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+
 USER 26
 
-CMD [ "./testpam.sh", "someuser@company.com"]
+#CMD [ "./testpam.sh", "someuser@company.com"]
