@@ -4,7 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <OutputType>Library</OutputType>
         <PublishAot>true</PublishAot>
-        <RuntimeIdentifiers>linux-x64;linux-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
         <PublishTrimmed>true</PublishTrimmed>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -16,6 +16,7 @@
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <OptimizationPreference>Size</OptimizationPreference>
+        <StackTraceSupport>false</StackTraceSupport>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
