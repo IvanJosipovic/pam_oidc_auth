@@ -15,7 +15,7 @@ This project is a Pluggable Authentication Module (PAM) for Linux that implement
 1. Download the appropriate binary from [Releases](https://github.com/IvanJosipovic/pam_oidc_auth/releases) and copy it to
     - x64  `/lib/x86_64-linux-gnu/security/pam_oidc_auth.so`
     - arm64 `/lib/aarch64-linux-gnu/security/pam_oidc_auth.so`
-1. Set permission `chmod 644 /lib/x86_64-linux-gnu/security/pam_oidc_auth.so`
+1. Set permission `chmod 555 /lib/x86_64-linux-gnu/security/pam_oidc_auth.so`
 1. Create a file named: `/etc/pam.d/oidc_auth`
 1. Enter and update the parameters
     ```
