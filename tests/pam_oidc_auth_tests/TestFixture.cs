@@ -2,6 +2,7 @@
 using Ductus.FluentDocker.Model.Common;
 using Ductus.FluentDocker.Services;
 using Ductus.FluentDocker.Services.Extensions;
+using System.Net;
 
 namespace pam_oidc_auth_tests;
 
@@ -11,6 +12,16 @@ public class TestFixture : IDisposable
 
     public TestFixture()
     {
+        try
+        {
+            IPHostEntry Host = Dns.GetHostEntryAsync("oidc-server-mock").GetAwaiter().GetResult();
+            Assert.Equal("127.0.0.1", Host.AddressList[0].ToString());
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("oidc-server-mock host entry to 127.0.0.1 is missing!");
+        }
+
         compositeService = new Builder()
             .UseContainer()
             .UseCompose()

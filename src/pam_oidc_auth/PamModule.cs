@@ -1,8 +1,11 @@
 ﻿using System.Runtime.InteropServices;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Security;
+using System.Net.Sockets;
+using System.Text;
+using HttpMachine;
 
 namespace pam_oidc_auth;
 
@@ -79,16 +82,15 @@ public static class PamModule
     {
         try
         {
-            var http = new HttpDocumentRetriever { RequireHttps = discoveryUrl.StartsWith("https://") };
+            var disc = HttpGet(discoveryUrl);
+            var config = new OpenIdConnectConfiguration(disc);
 
-            var config = OpenIdConnectConfigurationRetriever.GetAsync(discoveryUrl, http, CancellationToken.None)
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
+            var jwkeys = HttpGet(config.JwksUri);
+            var keys = JsonWebKeySet.Create(jwkeys);
 
             var validationParameters = new TokenValidationParameters
             {
-                IssuerSigningKeys = config.SigningKeys,
+                IssuerSigningKeys = keys.GetSigningKeys(),
                 ValidateIssuerSigningKey = true,
                 ValidAudience = audience,
                 ValidIssuer = config.Issuer,
@@ -106,5 +108,37 @@ public static class PamModule
         {
             return false;
         }
+    }
+
+    public static string HttpGet(string url)
+    {
+        Uri uri = new(url);
+        using var client = new TcpClient();
+        client.Connect(uri.Host, uri.Port);
+
+        Stream stream = client.GetStream();
+
+        if (uri.Scheme == Uri.UriSchemeHttps)
+        {
+            var ssl = new SslStream(stream, false);
+            ssl.AuthenticateAsClient(uri.Host);
+            stream = ssl;
+        }
+
+        var reqBytes = Encoding.ASCII.GetBytes($"GET {uri.AbsolutePath} HTTP/1.1\r\nHost: {uri.Host}:{uri.Port}\r\nConnection: close\r\n\r\n");
+        stream.Write(reqBytes);
+        stream.Flush();
+
+        using var handler = new HttpParserDelegate();
+        using var parser = new HttpCombinedParser(handler);
+        using (var memoryStream = new MemoryStream())
+        {
+            stream.CopyTo(memoryStream);
+            parser.Execute(memoryStream);
+        }
+
+        handler.HttpRequestResponse.Body.Position = 0;
+        var reader = new StreamReader(handler.HttpRequestResponse.Body);
+        return reader.ReadToEnd();
     }
 }
