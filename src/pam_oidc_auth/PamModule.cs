@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
+using HttpMachine;
 
 namespace pam_oidc_auth;
 
@@ -128,75 +129,16 @@ public static class PamModule
         stream.Write(reqBytes);
         stream.Flush();
 
-        using var reader = new StreamReader(stream, Encoding.ASCII);
-
-        // Read and parse headers
-        var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        string? statusLine = reader.ReadLine(); // HTTP/1.1 200 OK
-        string? line;
-
-        while (!string.IsNullOrEmpty(line = reader.ReadLine()))
+        using var handler = new HttpParserDelegate();
+        using var parser = new HttpCombinedParser(handler);
+        using (var memoryStream = new MemoryStream())
         {
-            int colonIndex = line.IndexOf(':');
-            if (colonIndex > 0)
-            {
-                var name = line.Substring(0, colonIndex).Trim();
-                var value = line.Substring(colonIndex + 1).Trim();
-                headers[name] = value;
-            }
+            stream.CopyTo(memoryStream);
+            parser.Execute(memoryStream);
         }
 
-        // Decide how to read the body
-        if (headers.TryGetValue("Transfer-Encoding", out var encoding) && encoding.Equals("chunked", StringComparison.OrdinalIgnoreCase))
-        {
-            return ReadChunkedBody(reader);
-        }
-        else
-        {
-            return reader.ReadToEnd(); // content-length or connection: close
-        }
-    }
-
-    public static string ReadChunkedBody(StreamReader reader)
-    {
-        var result = new StringBuilder();
-
-        while (true)
-        {
-            // Read the chunk size (in hex)
-            var sizeLine = reader.ReadLine();
-            if (sizeLine == null)
-                throw new IOException("Unexpected end of stream while reading chunk size");
-
-            // Parse chunk size
-            if (!int.TryParse(sizeLine, System.Globalization.NumberStyles.HexNumber, null, out int chunkSize))
-                throw new IOException($"Invalid chunk size: '{sizeLine}'");
-
-            if (chunkSize == 0)
-            {
-                // Read final empty line after 0-size chunk
-                reader.ReadLine();
-                break;
-            }
-
-            // Read exactly chunkSize characters
-            char[] buffer = new char[chunkSize];
-            int read = 0;
-            while (read < chunkSize)
-            {
-                int r = reader.Read(buffer, read, chunkSize - read);
-                if (r == 0) throw new IOException("Unexpected end of stream while reading chunk data");
-                read += r;
-            }
-
-            result.Append(buffer);
-
-            // Read and discard the trailing \r\n after each chunk
-            var trailing = reader.ReadLine();
-            if (trailing == null)
-                throw new IOException("Unexpected end of stream after chunk");
-        }
-
-        return result.ToString();
+        handler.HttpRequestResponse.Body.Position = 0;
+        var reader = new StreamReader(handler.HttpRequestResponse.Body);
+        return reader.ReadToEnd();
     }
 }
