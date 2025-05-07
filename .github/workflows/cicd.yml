@@ -58,7 +58,7 @@ jobs:
     - name: Run Benchmark
       working-directory: benchmarks/pam_oidc_auth_benchmarks
       run: |
-        docker-compose up -f ../../tests/pam_oidc_auth_tests/docker-compose.yaml
+        docker-compose -f ../../tests/pam_oidc_auth_tests/docker-compose.yaml up
         dotnet run -c Release
 
   publish-x64:
