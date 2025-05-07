@@ -27,7 +27,7 @@ public class BenchmarkJWT
         var responseContent = await response.Content.ReadAsStringAsync();
         JsonDocument json = JsonDocument.Parse(responseContent);
         json.RootElement.TryGetProperty("access_token", out JsonElement tokenElement);
-        return tokenElement.GetString();
+        return tokenElement.GetString() ?? throw new Exception("Unable to get token");
     }
 
     private string token = string.Empty;

@@ -37,7 +37,7 @@ public class Tests : IClassFixture<TestFixture>
         var responseContent = await response.Content.ReadAsStringAsync();
         JsonDocument json = JsonDocument.Parse(responseContent);
         json.RootElement.TryGetProperty("access_token", out JsonElement tokenElement);
-        return tokenElement.GetString();
+        return tokenElement.GetString() ?? throw new Exception("Unable to get token");
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public class Tests : IClassFixture<TestFixture>
         var token = await GetToken();
 
         var path = Path.GetDirectoryName(GetType().Assembly.Location);
-        var filePath = Path.Combine(path, "Dockerfile." + name);
+        var filePath = Path.Combine(path!, "Dockerfile." + name);
 
         new Builder()
           .DefineImage("testing.loc/" + name)
@@ -95,7 +95,7 @@ public class Tests : IClassFixture<TestFixture>
 
         container.WaitForStopped();
 
-        container.Logs().Read().ShouldContain("pamtester: successfully authenticated");
+        container.Logs(token: TestContext.Current.CancellationToken).Read().ShouldContain("pamtester: successfully authenticated");
 
         container.Dispose();
     }
