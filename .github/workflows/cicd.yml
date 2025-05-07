@@ -59,9 +59,7 @@ jobs:
       working-directory: benchmarks/pam_oidc_auth_benchmarks
       run: |
         docker-compose up -f ../../tests/pam_oidc_auth_tests/docker-compose.yaml
-        dotnet publish -c Release -o bin/publish
-        chmod +x bin/publish/pam_oidc_auth_benchmarks
-        ./bin/publish/pam_oidc_auth_benchmarks
+        dotnet run -c Release
 
   publish-x64:
     name: Publish x64
