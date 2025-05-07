@@ -58,6 +58,7 @@ jobs:
     - name: Run Benchmark
       working-directory: benchmarks/pam_oidc_auth_benchmarks
       run: |
+        docker-compose up -f ../../tests/pam_oidc_auth_tests/docker-compose.yaml
         dotnet publish -c Release -o bin/publish
         chmod +x bin/publish/pam_oidc_auth_benchmarks
         ./bin/publish/pam_oidc_auth_benchmarks
@@ -76,12 +77,12 @@ jobs:
 
     - name: Publish x64
       working-directory: src/pam_oidc_auth
-      run: dotnet publish -r linux-x64
+      run: dotnet publish -r linux-x64 -o bin/publish
 
     - uses: actions/upload-artifact@v4
       with:
         name: pam_oidc_auth-x64
-        path: src/pam_oidc_auth/bin/Release/net9.0/linux-x64/publish/
+        path: src/pam_oidc_auth/bin/publish/
 
   publish-arm64:
     name: Publish arm64
@@ -97,12 +98,12 @@ jobs:
 
     - name: Publish x64
       working-directory: src/pam_oidc_auth
-      run: dotnet publish -r linux-arm64
+      run: dotnet publish -r linux-arm64 -o bin/publish
 
     - uses: actions/upload-artifact@v4
       with:
         name: pam_oidc_auth-arm64
-        path: src/pam_oidc_auth/bin/Release/net9.0/linux-arm64/publish/
+        path: src/pam_oidc_auth/bin/publish/
 
   create-release:
     if: ${{ github.event_name != 'pull_request' }}

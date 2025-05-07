@@ -82,11 +82,8 @@ public static class PamModule
     {
         try
         {
-            var disc = HttpGet(discoveryUrl);
-            var config = new OpenIdConnectConfiguration(disc);
-
-            var jwkeys = HttpGet(config.JwksUri);
-            var keys = JsonWebKeySet.Create(jwkeys);
+            var config = new OpenIdConnectConfiguration(HttpGet(discoveryUrl));
+            var keys = JsonWebKeySet.Create(HttpGet(config.JwksUri));
 
             var validationParameters = new TokenValidationParameters
             {
