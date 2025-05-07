@@ -1,6 +1,7 @@
 services:
   oidc-server-mock:
     container_name: oidc-server-mock
+    hostname: oidc-server-mock
     image: ghcr.io/soluto/oidc-server-mock:latest
     ports:
       - '8080:8080'
