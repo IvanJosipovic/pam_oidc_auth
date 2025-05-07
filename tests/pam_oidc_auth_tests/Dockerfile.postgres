@@ -2,7 +2,7 @@
 #FROM postgres:16-bookworm
 #FROM postgres:16-bullseye
 #FROM postgis/postgis:16-3.5
-FROM ghcr.io/cloudnative-pg/postgresql:16-bookworm
+FROM ghcr.io/cloudnative-pg/postgresql:17-bookworm
 
 USER root
 
