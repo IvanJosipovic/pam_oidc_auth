@@ -121,7 +121,7 @@ public static class PamModule
             stream = ssl;
         }
 
-        stream.Write(Encoding.ASCII.GetBytes($"GET {uri.AbsolutePath} HTTP/1.1\r\nHost: {uri.Host}:{uri.Port}\r\nConnection: close\r\n\r\n"));
+        stream.Write(Encoding.ASCII.GetBytes($"GET {uri.PathAndQuery} HTTP/1.1\r\nHost: {uri.Host}:{uri.Port}\r\nConnection: close\r\n\r\n"));
         stream.Flush();
 
         using var handler = new HttpParserDelegate();
