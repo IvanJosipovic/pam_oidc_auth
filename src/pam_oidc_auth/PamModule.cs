@@ -113,8 +113,7 @@ public static class PamModule
     public static string HttpGet(string url)
     {
         Uri uri = new(url);
-        using var client = new TcpClient();
-        client.Connect(uri.Host, uri.Port);
+        using var client = new TcpClient(uri.Host, uri.Port);
 
         Stream stream = client.GetStream();
 
@@ -125,8 +124,7 @@ public static class PamModule
             stream = ssl;
         }
 
-        var reqBytes = Encoding.ASCII.GetBytes($"GET {uri.AbsolutePath} HTTP/1.1\r\nHost: {uri.Host}:{uri.Port}\r\nConnection: close\r\n\r\n");
-        stream.Write(reqBytes);
+        stream.Write(Encoding.ASCII.GetBytes($"GET {uri.AbsolutePath} HTTP/1.1\r\nHost: {uri.Host}:{uri.Port}\r\nConnection: close\r\n\r\n"));
         stream.Flush();
 
         using var handler = new HttpParserDelegate();
@@ -138,7 +136,8 @@ public static class PamModule
         }
 
         handler.HttpRequestResponse.Body.Position = 0;
-        var reader = new StreamReader(handler.HttpRequestResponse.Body);
+        using var reader = new StreamReader(handler.HttpRequestResponse.Body);
+
         return reader.ReadToEnd();
     }
 }
