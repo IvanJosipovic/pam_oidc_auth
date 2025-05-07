@@ -33,7 +33,7 @@ jobs:
     - name: Add hosts to /etc/hosts
       run: |
           sudo echo "127.0.0.1 oidc-server-mock" | sudo tee -a /etc/hosts
-          curl -SL https://github.com/docker/compose/releases/download/v2.35.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+          curl -sSL https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
 
     - name: .NET Test
@@ -54,6 +54,13 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage.cobertura.xml
         fail_ci_if_error: false
+
+    - name: Run Benchmark
+      working-directory: benchmarks/pam_oidc_auth_benchmarks
+      run: |
+        dotnet publish -c Release -o bin/publish
+        chmod +x bin/publish/pam_oidc_auth_benchmarks
+        ./bin/publish/pam_oidc_auth_benchmarks
 
   publish-x64:
     name: Publish x64
