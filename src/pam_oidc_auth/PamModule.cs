@@ -107,6 +107,7 @@ public static class PamModule
         }
     }
 
+    // Basic Synchronous Http Client
     public static string HttpGet(string url)
     {
         Uri uri = new(url);
@@ -121,7 +122,12 @@ public static class PamModule
             stream = ssl;
         }
 
-        stream.Write(Encoding.ASCII.GetBytes($"GET {uri.PathAndQuery} HTTP/1.1\r\nHost: {uri.Host}:{uri.Port}\r\nConnection: close\r\n\r\n"));
+        stream.Write(Encoding.ASCII.GetBytes($"GET {uri.PathAndQuery} HTTP/1.1"+ "\r\n" +
+                                             $"Host: {uri.Host}:{uri.Port}" + "\r\n" +
+                                             $"Accept: application/json" + "\r\n" +
+                                             $"User-Agent: pam_oidc_auth" + "\r\n" +
+                                             $"Connection: close" + "\r\n" +
+                                             "\r\n"));
         stream.Flush();
 
         using var handler = new HttpParserDelegate();
