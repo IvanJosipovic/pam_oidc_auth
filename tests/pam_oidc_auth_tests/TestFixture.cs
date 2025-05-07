@@ -17,7 +17,7 @@ public class TestFixture : IDisposable
             IPHostEntry Host = Dns.GetHostEntryAsync("oidc-server-mock").GetAwaiter().GetResult();
             Assert.Equal("127.0.0.1", Host.AddressList[0].ToString());
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw new Exception("oidc-server-mock host entry to 127.0.0.1 is missing!");
         }

@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pam_oidc_auth_tests", "tests\pam_oidc_auth_tests\pam_oidc_auth_tests.csproj", "{CC94DA24-2996-4D86-9E7B-2E2D646E4CCD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pam_oidc_auth_benchmarks", "benchmarks\pam_oidc_auth_benchmarks\pam_oidc_auth_benchmarks.csproj", "{8F89ECB0-DB3F-0D93-2363-2CA4B1B5D217}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{CC94DA24-2996-4D86-9E7B-2E2D646E4CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC94DA24-2996-4D86-9E7B-2E2D646E4CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC94DA24-2996-4D86-9E7B-2E2D646E4CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F89ECB0-DB3F-0D93-2363-2CA4B1B5D217}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F89ECB0-DB3F-0D93-2363-2CA4B1B5D217}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F89ECB0-DB3F-0D93-2363-2CA4B1B5D217}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F89ECB0-DB3F-0D93-2363-2CA4B1B5D217}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -82,11 +82,8 @@ public static class PamModule
     {
         try
         {
-            var disc = HttpGet(discoveryUrl);
-            var config = new OpenIdConnectConfiguration(disc);
-
-            var jwkeys = HttpGet(config.JwksUri);
-            var keys = JsonWebKeySet.Create(jwkeys);
+            var config = new OpenIdConnectConfiguration(HttpGet(discoveryUrl));
+            var keys = JsonWebKeySet.Create(HttpGet(config.JwksUri));
 
             var validationParameters = new TokenValidationParameters
             {
@@ -110,11 +107,11 @@ public static class PamModule
         }
     }
 
+    // Basic Synchronous Http Client
     public static string HttpGet(string url)
     {
         Uri uri = new(url);
-        using var client = new TcpClient();
-        client.Connect(uri.Host, uri.Port);
+        using var client = new TcpClient(uri.Host, uri.Port);
 
         Stream stream = client.GetStream();
 
@@ -125,8 +122,12 @@ public static class PamModule
             stream = ssl;
         }
 
-        var reqBytes = Encoding.ASCII.GetBytes($"GET {uri.AbsolutePath} HTTP/1.1\r\nHost: {uri.Host}:{uri.Port}\r\nConnection: close\r\n\r\n");
-        stream.Write(reqBytes);
+        stream.Write(Encoding.ASCII.GetBytes($"GET {uri.PathAndQuery} HTTP/1.1" + "\r\n" +
+                                             $"Host: {uri.Host}:{uri.Port}"     + "\r\n" +
+                                              "Accept: application/json"        + "\r\n" +
+                                              "User-Agent: pam_oidc_auth"       + "\r\n" +
+                                              "Connection: close"               + "\r\n" +
+                                              "\r\n"));
         stream.Flush();
 
         using var handler = new HttpParserDelegate();
@@ -138,7 +139,8 @@ public static class PamModule
         }
 
         handler.HttpRequestResponse.Body.Position = 0;
-        var reader = new StreamReader(handler.HttpRequestResponse.Body);
+        using var reader = new StreamReader(handler.HttpRequestResponse.Body);
+
         return reader.ReadToEnd();
     }
 }
