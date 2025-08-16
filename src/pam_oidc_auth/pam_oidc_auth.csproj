@@ -35,6 +35,6 @@
 
     <ItemGroup>
         <PackageReference Include="HttpMachine.PCL" Version="5.0.1" />
-        <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.13.1" />
+        <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.14.0" />
     </ItemGroup>
 </Project>
