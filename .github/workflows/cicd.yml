@@ -72,12 +72,11 @@ jobs:
           - rid: linux-x64
             runs-on: ubuntu-latest
           - rid: linux-arm64
-            fileName: KubeUI.Desktop
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-24.04-arm
           - rid: linux-musl-x64
             runs-on: ubuntu-latest
           - rid: linux-musl-arm64
-            runs-on: ubuntu-latest
+            runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v5
 
