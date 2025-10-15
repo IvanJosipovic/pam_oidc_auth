@@ -1,8 +1,5 @@
 
-#FROM postgres:16-bookworm
-#FROM postgres:16-bullseye
-#FROM postgis/postgis:16-3.5
-FROM ghcr.io/cloudnative-pg/postgresql:14-system-trixie
+FROM ghcr.io/cloudnative-pg/postgresql:17-standard-trixie
 
 USER root
 
