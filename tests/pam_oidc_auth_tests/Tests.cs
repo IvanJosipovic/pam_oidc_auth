@@ -88,8 +88,10 @@ public class Tests : IClassFixture<TestFixture>
         var container = new Builder()
            .UseContainer()
            .UseImage("testing.loc/" + name)
-           .WithEnvironment("TEST_TOKEN=" + token)
-           .WithEnvironment("POSTGRES_PASSWORD=test123")
+           .WithEnvironment([
+               "POSTGRES_PASSWORD=test123",
+               "TEST_TOKEN=" + token
+            ])
            .ExposePort(5432, 5432)
            .UseNetwork(fixture.GetNetwork())
            .Build()
