@@ -1,13 +1,5 @@
 FROM debian
 
-#stable
-#FROM debian:bookworm
-#FROM debian:bookworm-slim
-
-#stable -1
-#FROM debian:bullseye
-#FROM debian:bullseye-slim
-
 # Install pamtester todo remove
 RUN set -xe; \
 	apt-get update; \

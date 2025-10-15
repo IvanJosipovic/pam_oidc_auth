@@ -82,27 +82,24 @@ public static class PamModule
     {
         try
         {
-            var test = HttpGet(discoveryUrl);
-            // var config = new OpenIdConnectConfiguration(HttpGet(discoveryUrl));
-            // var keys = JsonWebKeySet.Create(HttpGet(config.JwksUri));
+            var config = new OpenIdConnectConfiguration(HttpGet(discoveryUrl));
+            var keys = JsonWebKeySet.Create(HttpGet(config.JwksUri));
 
-            // var validationParameters = new TokenValidationParameters
-            // {
-            //     IssuerSigningKeys = keys.GetSigningKeys(),
-            //     ValidateIssuerSigningKey = true,
-            //     ValidAudience = audience,
-            //     ValidIssuer = config.Issuer,
-            // };
+            var validationParameters = new TokenValidationParameters
+            {
+                IssuerSigningKeys = keys.GetSigningKeys(),
+                ValidateIssuerSigningKey = true,
+                ValidAudience = audience,
+                ValidIssuer = config.Issuer,
+            };
 
-            // new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+            new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 
-            // var jwtToken = (JwtSecurityToken)validatedToken;
+            var jwtToken = (JwtSecurityToken)validatedToken;
 
-            // var nameClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == usernameClaim);
+            var nameClaim = jwtToken.Claims.FirstOrDefault(x => x.Type == usernameClaim);
 
-            // return nameClaim is not null && string.Equals(nameClaim.Value, username, StringComparison.OrdinalIgnoreCase);
-
-            return true;
+            return nameClaim is not null && string.Equals(nameClaim.Value, username, StringComparison.OrdinalIgnoreCase);
         }
         catch
         {
