@@ -1,0 +1,39 @@
+{
+  "branches": [
+    "main",
+    {
+      "name": "beta",
+      "prerelease": true
+    },
+    {
+      "name": "alpha",
+      "prerelease": true
+    }
+  ],
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "conventionalcommits"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          { "path": "dist/pam_oidc_auth-linux-arm64/pam_oidc_auth.so", "name": "pam_oidc_auth-arm64.so" },
+          { "path": "dist/pam_oidc_auth-linux-x64/pam_oidc_auth.so", "name": "pam_oidc_auth-x64.so" },
+          
+          { "path": "dist/pam_oidc_auth-linux-musl-arm64/pam_oidc_auth.so", "name": "pam_oidc_auth-musl-arm64.so" },
+          { "path": "dist/pam_oidc_auth-linux-musl-x64/pam_oidc_auth.so", "name": "pam_oidc_auth-musl-x64.so" }
+        ]
+      }
+    ]
+  ]
+}
