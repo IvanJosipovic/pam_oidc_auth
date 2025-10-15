@@ -94,20 +94,45 @@ jobs:
       with:
         global-json-file: global.json
 
-    - name: Publish x64
-      working-directory: src/pam_oidc_auth
-      run: dotnet publish -r linux-arm64 -o bin/publish
+  publish-matrix:
+    name: Publish Installers
+    runs-on: ${{ matrix.runs-on }}
+    needs: [build-test]
+    environment: production
+    strategy:
+      matrix:
+        include:
+          - rid: linux-x64
+            runs-on: ubuntu-latest
+          - rid: linux-arm64
+            fileName: KubeUI.Desktop
+            runs-on: ubuntu-latest
+          - rid: linux-musl-x64
+            runs-on: ubuntu-latest
+          - rid: linux-musl-arm64
+            runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: pam_oidc_auth-arm64
-        path: src/pam_oidc_auth/bin/publish/
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Publish ${{ matrix.rid }}
+        working-directory: src/pam_oidc_auth
+        run: dotnet publish -r ${{ matrix.rid }} -o bin/publish
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pam_oidc_auth-${{ matrix.rid }}
+          path: src/pam_oidc_auth/bin/publish/
 
   create-release:
     if: ${{ github.event_name != 'pull_request' }}
     name: Create Release
     runs-on: ubuntu-latest
-    needs: [build-test,publish-x64,publish-arm64]
+    needs: [build-test, publish-matrix]
     steps:
     - uses: actions/checkout@v5
 
