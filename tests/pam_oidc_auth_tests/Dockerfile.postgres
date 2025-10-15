@@ -1,24 +1,7 @@
 
-#FROM postgres:16-bookworm
-#FROM postgres:16-bullseye
-#FROM postgis/postgis:16-3.5
-FROM ghcr.io/cloudnative-pg/postgresql:17-bookworm
+FROM ghcr.io/cloudnative-pg/postgresql:17-standard-trixie
 
 USER root
-
-# Install addons
-RUN apt-get update \
-    && apt-get install -y lsb-release wget \
-    && echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
-    && wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
-    && apt-get update \
-    && apt-get install -y \
-        "timescaledb-2-postgresql-${PG_MAJOR}=${TIMESCALE_VERSION}*" \
-	    "timescaledb-toolkit-postgresql-${PG_MAJOR}" \
-        "postgresql-${PG_MAJOR}-cron" \
-    && apt-get remove -y lsb-release wget \
-    && 	rm -fr /tmp/* \
-    && 	rm -rf /var/lib/apt/lists/*
 
 # Install pamtester
 RUN set -xe; \
