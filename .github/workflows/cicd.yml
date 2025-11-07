@@ -89,7 +89,7 @@ jobs:
         working-directory: src/pam_oidc_auth
         run: dotnet publish -r ${{ matrix.rid }} -o bin/publish
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: pam_oidc_auth-${{ matrix.rid }}
           path: src/pam_oidc_auth/bin/publish/
@@ -108,7 +108,7 @@ jobs:
         git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
     - name: Download artifacts
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v6
       with:
         path: dist/
 
