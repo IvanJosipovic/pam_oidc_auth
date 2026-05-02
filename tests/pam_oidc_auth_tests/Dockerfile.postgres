@@ -1,4 +1,4 @@
-FROM ghcr.io/cloudnative-pg/postgresql:17-standard-trixie
+FROM ghcr.io/cloudnative-pg/postgresql:18-standard-trixie
 
 USER root
 
