@@ -41,7 +41,7 @@ jobs:
       run: dotnet run -c Release /p:DebugSymbols=true /p:DebugType=full -- --report-xunit-trx --report-xunit-trx-filename test-results.trx --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
 
     - name: Test Report
-      uses: dorny/test-reporter@v2
+      uses: dorny/test-reporter@v3
       if: success() || failure()
       with:
         name: pam_oidc_auth Tests
